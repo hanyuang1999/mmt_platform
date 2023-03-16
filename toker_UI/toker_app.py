@@ -66,7 +66,7 @@ class My_Server(BaseHTTPRequestHandler):
         print(usr_manager.get_target_ini_item("SH",'testresult'))
         usr_manager.set_res["testresult"]=  usr_manager.get_target_ini_item("SH",'testresult')
 
-        self.wfile.write(json.dumps(usr_manager.get_res).encode())
+        self.wfile.write(json.dumps(usr_manager.get_res()).encode())
 
         'python3 main.py'
 
