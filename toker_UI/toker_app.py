@@ -23,7 +23,7 @@ class My_Server(BaseHTTPRequestHandler):
 
     def do_POST(self):
         self.send_response(200)
-        usr_manager.set_res={'result': 'HTTP SERVER OK'}
+        usr_manager.set_res({'result': 'HTTP SERVER OK'})
 
         datas = self.rfile.read(int(self.headers['content-length']))
         print('headers', self.headers)
