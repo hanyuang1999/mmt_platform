@@ -35,6 +35,7 @@ class My_Server(BaseHTTPRequestHandler):
  
 
         usr_manager.target_exe_start("python3 ./Sensorhub_Test/scripts/main.py")
+        time.sleep(1)
 
      
         # os.popen("python Sensorhub_Test/scripts/main.py")
