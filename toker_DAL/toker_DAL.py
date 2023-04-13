@@ -58,7 +58,7 @@ class Usr_service:
     def set_target_ini_item(self,session,item,value):
         self.config.read(self.get_ini_path(),encoding="utf-8")
         self.config.set(session, item, value) 
-        self.config.write(open(self.get_ini_path(), "r+", encoding="utf-8"))
+        self.config.write(open(self.get_ini_path(), "w", encoding="utf-8"))
         print("ini set OK")
         pass
     def target_exe_start(self,cmd):
