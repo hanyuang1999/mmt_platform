@@ -94,7 +94,11 @@
 </div>
 
 <div class="right-column">
+  <p>当前进度</p>
   <p id="cur_step">Waiting...</p>
+  <p>
+    <progress max="10" value="0" id="progressBar"></progress>
+  </p>
   <table id="result_table">
     <colgroup>
       <col style="width: 25%;">
@@ -130,6 +134,8 @@
 	var output_res=document.getElementById("string_result")
   var current_step = document.getElementById('cur_step');
   var tableBody = document.querySelector("#result_table tbody")
+  var progressBar = document.getElementById("progressBar")
+
   //socket数据传输相关
   socket.onopen = function() {
     console.log('连接成功')
@@ -137,8 +143,20 @@
   }
   
   socket.addEventListener('message', (event) => { // 添加消息监听器
-    console.log('触发监听')
-    current_step.textContent = JSON.parse(event.data)["name"]; // 将收到的消息显示在test_text元素上
+    var data = JSON.parse(event.data)
+    if(Object.keys(data).length==3){
+      current_step.textContent = data["cur_step"] + ": " + data["remark"]; 
+      progressBar.value = data["step_id"]
+    }
+    if(Object.keys(data).length==5){
+      console.log("进入表格")
+      var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+data["step_id"]+") td")
+      console.log(edit_cells[1])
+      edit_cells[0].textContent = data["log_time"]
+      edit_cells[1].textContent = data["test_name"]
+      edit_cells[2].textContent = data["result_status"]
+      edit_cells[3].textContent = data["result_remark"]
+    }
   });
 
   //表格控制
