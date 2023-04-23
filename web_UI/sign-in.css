@@ -31,3 +31,29 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.container {
+  display: flex;
+}
+
+.left-column {
+  width: 40%;
+  padding: 20px;
+}
+
+.right-column {
+  width: 60%;
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 5px;
+}
+

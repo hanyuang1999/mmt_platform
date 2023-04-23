@@ -1,150 +1,210 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.108.0">
-    <title>Sensorhub 入库测试</title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.108.0">
+  <title>Sensorhub 入库测试</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
 
-    
+  
 
-    
+  
 
 <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
       }
+    }
 
-      .b-example-divider {
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
+    .b-example-divider {
+      height: 3rem;
+      background-color: rgba(0, 0, 0, .1);
+      border: solid rgba(0, 0, 0, .15);
+      border-width: 1px 0;
+      box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+    }
 
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
+    .b-example-vr {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 100vh;
+    }
 
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
+    .bi {
+      vertical-align: -.125em;
+      fill: currentColor;
+    }
 
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
+    .nav-scroller {
+      position: relative;
+      z-index: 2;
+      height: 2.75rem;
+      overflow-y: hidden;
+    }
 
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-    </style>
+    .nav-scroller .nav {
+      display: flex;
+      flex-wrap: nowrap;
+      padding-bottom: 1rem;
+      margin-top: -1px;
+      overflow-x: auto;
+      text-align: center;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
 
-    <!-- Custom styles for this template -->
-    <link href="sign-in.css" rel="stylesheet">
-  </head>
-  <body class="text-center">
+  <!-- Custom styles for this template -->
+  <link href="sign-in.css" rel="stylesheet">
+</head>
+<body class="text-center">
     
-<main class="form-signin w-100 m-auto">
-  <form>
-    <img class="mb-4" src="./assets/brand/Logo.png" alt="" width="72" height="72">
-    <h1 class="h3 mb-3 fw-normal">Sensorhub 入库测试</h1>
-    <div class="form-floating">
-      <input type="" class="form-control" id="string_Input_SN" placeholder="***">
-      <label for="floatingInput">请输入Sensorhub SN号</label>
-    </div>
-    <div class="form-floating">
-      <input type="" class="form-control" id="string_result" placeholder="***">
-      <label for="floatingPassword">测试结果</label>
-    </div>
+<div class="left-column">
+  <main class="form-signin w-100 m-auto">
+    <form>
+      <img class="mb-4" src="./assets/brand/Logo.png" alt="" width="72" height="72">
+      <h1 class="h3 mb-3 fw-normal">Sensorhub 入库测试</h1>
+      <div class="form-floating">
+        <input type="" class="form-control" id="string_Input_SN" placeholder="***">
+        <label for="floatingInput">请输入Sensorhub SN号</label>
+      </div>
+      <div class="form-floating">
+        <input type="" class="form-control" id="string_result" placeholder="***">
+        <label for="floatingPassword">测试结果</label>
+      </div>
+      <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
+      <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="../assets/brand/mo.png" alt="" width="60" height="10"></p>
+    </form>
+  </main>
+</div>
 
-    <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
-    <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="../assets/brand/mo.png" alt="" width="60" height="10"></p>
-
-  </form>
-</main>
+<div class="right-column">
+  <p id="cur_step">Waiting...</p>
+  <table id="result_table">
+    <colgroup>
+      <col style="width: 25%;">
+      <col style="width: 20%;">
+      <col style="width: 25%;">
+      <col style="width: 30%;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>时间</th>
+        <th>测试用例</th>
+        <th>测试结果</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>等待中</td>
+        <td>样例1</td>
+        <td> </td>
+        <td> </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div>
+</div>
 
 <script>
-  
+  const socket = new WebSocket('ws://localhost:7777');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN")
 	var output_res=document.getElementById("string_result")
-  window.onload = (event) =>{
+  var current_step = document.getElementById('cur_step');
+  var tableBody = document.querySelector("#result_table tbody")
+  //socket数据传输相关
+  socket.onopen = function() {
+    console.log('连接成功')
+    socket.send('unique confirm')
+  }
+  
+  socket.addEventListener('message', (event) => { // 添加消息监听器
+    console.log('触发监听')
+    current_step.textContent = JSON.parse(event.data)["name"]; // 将收到的消息显示在test_text元素上
+  });
 
-    console.log('Page Loaded');
+  //表格控制
+  for(var i=0;i<9;i++) {
+    var newRow = document.createElement("tr");
+    var cell1 = document.createElement("td");
+    var cell2 = document.createElement("td");
+    var cell3 = document.createElement("td");
+    var cell4 = document.createElement("td");
 
-   };
+    // 设置单元格文本内容（这里以i作为示例）
+    cell1.textContent = "等待中"
+    cell2.textContent = "样例"+(i+2);
+    cell3.textContent = "";
+    cell4.textContent = "";
+    newRow.appendChild(cell1);
+    newRow.appendChild(cell2);
+    newRow.appendChild(cell3);
+    newRow.appendChild(cell4);
 
-   async function start()
-  {
-
-    console.log("start",input_SN.value)
-
-
-    HTTP_POST(input_SN.value)
-    console.log("stOP")
-
-
+    // 将新行添加到表格的tbody中
+    tableBody.appendChild(newRow);
   }
 
-function HTTP_POST(e){
-			var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-			httpRequest.open('POST', 'http://10.8.241.205:19999/', true); //第二步：打开连接
-			httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-			console.log(e)
-      // httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-			
+  function setTable(){
 
-      // httpRequest.setRequestHeader("Content-type","application/json");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-			var obj = { SN:e };
-			httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
-			/**
-			 * 获取数据后的处理程序
-			 */
-			httpRequest.onreadystatechange = function () {
-				console.log("发送成功等请求。。。")//请求后的回调接口，可将请求成功后要执行的程序写在其中
-			    if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-			       console.log("发送成功等请求")
-					var json = httpRequest.responseText;//获取到服务端返回的数据
-			        console.log(json);
-              output_res.value= JSON.parse(json)["testresult"]
-					console.log("响应概况");
-			    }
-			};
-			
-			
-			
-		}	
+  };
+
+  //网页初始化
+  window.onload = (event) =>{
+    console.log('Page Loaded');
+  };
+
+   //开始按钮
+  async function start()
+  {
+    console.log("start",input_SN.value)
+    HTTP_POST(input_SN.value)
+    console.log("stOP")
+  }
+
+  function HTTP_POST(e){
+    var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+    httpRequest.open('POST', 'http://10.8.241.205:19999/', true); //第二步：打开连接
+    httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+    console.log(e)
+    // httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+    
+    // httpRequest.setRequestHeader("Content-type","application/json");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+    var obj = { SN:e };
+    httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
+    /**
+     * 获取数据后的处理程序
+     */
+    httpRequest.onreadystatechange = function () {
+      console.log("发送成功等请求。。。")//请求后的回调接口，可将请求成功后要执行的程序写在其中
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+            console.log("发送成功等请求")
+        var json = httpRequest.responseText;//获取到服务端返回的数据
+            console.log(json);
+            output_res.value= JSON.parse(json)["testresult"]
+        console.log("响应概况");
+        }
+    };
+  }	
 </script>
     
-  </body>
+</body>
 </html>
