@@ -10,10 +10,6 @@
 
   <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
 
-  
-
-  
-
 <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
@@ -50,22 +46,31 @@
       fill: currentColor;
     }
 
-    .nav-scroller {
-      position: relative;
-      z-index: 2;
-      height: 2.75rem;
-      overflow-y: hidden;
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
     }
-
-    .nav-scroller .nav {
-      display: flex;
-      flex-wrap: nowrap;
-      padding-bottom: 1rem;
-      margin-top: -1px;
-      overflow-x: auto;
+    li {
+      float: left;
+    }
+    li a {
+      display: block;
+      color: white;
       text-align: center;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+    li a:hover {
+      background-color: #111;
+    }
+    .page {
+      display: none;
+    }
+    .active {
+      display: block;
     }
   </style>
 
@@ -73,7 +78,14 @@
   <link href="sign-in.css" rel="stylesheet">
 </head>
 <body class="text-center">
-    
+  <div class="top-nav">
+    <ul>
+        <li><a href="">首页</a></li>
+        <li><a href="">自定义测试</a></li>
+        <li><a href="/result">测试记录</a></li>
+    </ul>
+  </div>
+<div id="index" class="content">
 <div class="left-column">
   <main class="form-signin w-100 m-auto">
     <form>
@@ -97,7 +109,7 @@
   <p>当前进度</p>
   <p id="cur_step">Waiting...</p>
   <p>
-    <progress max="80" value="0" id="progressBar"></progress>
+    <progress max="8" value="0" id="progressBar"></progress>
   </p>
   <table id="result_table">
     <colgroup>
@@ -124,11 +136,12 @@
     </tbody>
   </table>
 </div>
-<div>
+</div>
+<div id="history">
 </div>
 
 <script>
-  const socket = new WebSocket('ws://localhost:7777');
+  const socket = new WebSocket('ws://10.8.104.140:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN")
 	var output_res=document.getElementById("string_result")
@@ -149,18 +162,22 @@
       progressBar.value = data["step_id"]
     }
     if(Object.keys(data).length==5){
-      console.log("进入表格")
       var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+data["step_id"]+") td")
-      console.log(edit_cells[1])
       edit_cells[0].textContent = data["log_time"]
       edit_cells[1].textContent = data["test_name"]
       edit_cells[2].textContent = data["result_status"]
+      if(data["result_status"]=="success"){
+        edit_cells[2].style.color = "green"
+      }
+      else{
+        edit_cells[2].style.color = "red"
+      }
       edit_cells[3].textContent = data["result_remark"]
     }
   });
 
   //表格控制
-  for(var i=0;i<9;i++) {
+  for(var i=0;i<7;i++) {
     var newRow = document.createElement("tr");
     var cell1 = document.createElement("td");
     var cell2 = document.createElement("td");
@@ -195,7 +212,7 @@
   {
     console.log("start",input_SN.value)
     HTTP_POST(input_SN.value)
-    console.log("stOP")
+    console.log("stop")
   }
 
   function HTTP_POST(e){
@@ -203,16 +220,10 @@
     httpRequest.open('POST', 'http://10.8.241.205:19999/', true); //第二步：打开连接
     httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
     console.log(e)
-    // httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-    
-    // httpRequest.setRequestHeader("Content-type","application/json");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
     var obj = { SN:e };
     httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
-    /**
-     * 获取数据后的处理程序
-     */
     httpRequest.onreadystatechange = function () {
-      console.log("发送成功等请求。。。")//请求后的回调接口，可将请求成功后要执行的程序写在其中
+      console.log("发送成功等请求。。。")
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             console.log("发送成功等请求")
         var json = httpRequest.responseText;//获取到服务端返回的数据
