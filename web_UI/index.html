@@ -81,9 +81,16 @@
   <div class="top-nav">
     <ul>
         <li><a href="">首页</a></li>
-        <li><a href="">自定义测试</a></li>
+        <li><a href="javascript:void(0)" id="openModal">自定义测试</a></li>
         <li><a href="/result">测试记录</a></li>
     </ul>
+  </div>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <p>这是一个简单的弹窗。</p>
+    </div>
   </div>
 <div id="index" class="content">
 <div class="left-column">
@@ -141,7 +148,7 @@
 </div>
 
 <script>
-  const socket = new WebSocket('ws://10.8.104.140:19799');
+  const socket = new WebSocket('ws://10.8.146.24:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN")
 	var output_res=document.getElementById("string_result")
@@ -217,7 +224,7 @@
 
   function HTTP_POST(e){
     var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-    httpRequest.open('POST', 'http://10.8.241.205:19999/', true); //第二步：打开连接
+    httpRequest.open('POST', 'http://10.8.146.24:19999/', true); //第二步：打开连接
     httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
     console.log(e)
     var obj = { SN:e };
@@ -233,6 +240,20 @@
         }
     };
   }	
+  document.getElementById('openModal').addEventListener('click', function() {
+    document.getElementById('myModal').style.display = 'block';
+  });
+
+document.getElementById('closeModal').addEventListener('click', function() {
+  document.getElementById('myModal').style.display = 'none';
+});
+
+window.addEventListener('click', function(event) {
+  if (event.target === document.getElementById('myModal')) {
+    document.getElementById('myModal').style.display = 'none';
+  }
+});
+
 </script>
     
 </body>

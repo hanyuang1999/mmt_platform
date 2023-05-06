@@ -23,7 +23,7 @@ async def send_to_html(message):
 
 clients = set()
 async def main():
-    async with serve(server, "10.8.104.140", 19799):
+    async with serve(server, "0.0.0.0", 19799):
         print("server start...")
         await asyncio.Future()  # run forever
 

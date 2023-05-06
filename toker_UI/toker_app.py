@@ -37,17 +37,6 @@ class My_Server(BaseHTTPRequestHandler):
         usr_manager.target_exe_start("python3 ./Sensorhub_Test/scripts/main.py")
         time.sleep(1)
 
-     
-        # os.popen("python Sensorhub_Test/scripts/main.py")
-
-        # print("succccccccccccccccccccc")
-
-        # config.read("./Sensorhub_Test/SH_info.ini",encoding="utf-8")
- 
-
-        # value1 = config.get("SH",'running_status') 
-      
-
 
         while (usr_manager.get_target_ini_item("SH",'running_status')=='True'):
              print("target running")
