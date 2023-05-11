@@ -7,15 +7,12 @@ folder_ip = ""
 def server1():
     global folder_ip
     command = "allure open ./Sensorhub_Test/result"
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, text=True)
     while True:
         line = process.stdout.readline()
-        print(line)
         if "Server started at" in line:
-            print(line)
             line = line.strip()
             break
-    print(line)
     pattern = r"http://127.0.0.1:(\d+)/"
     match = re.search(pattern, line)
     if match:
@@ -23,6 +20,7 @@ def server1():
         print(folder_ip)
     else:
         print("端口未找到")
+    process.wait()
 
 def server2():
     global folder_ip

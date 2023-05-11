@@ -1,5 +1,27 @@
 import asyncio
 from websockets.server import serve
+import subprocess
+import threading
+
+folder_ip = ""
+
+def server1():
+    global folder_ip
+    command = "allure open ./Sensorhub_Test/result"
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, text=True)
+    while True:
+        line = process.stdout.readline()
+        if "Server started at" in line:
+            line = line.strip()
+            break
+    pattern = r"http://127.0.0.1:(\d+)/"
+    match = re.search(pattern, line)
+    if match:
+        folder_ip = match.group(1)
+        print(folder_ip)
+    else:
+        print("端口未找到")
+    process.wait()
 
 async def server(websocket, path):
     print("New connection:", websocket.remote_address)
