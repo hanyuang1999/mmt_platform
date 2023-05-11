@@ -23,13 +23,17 @@ def server1():
         print("端口未找到")
     process.wait()
 
-async def server(websocket, path):
+async def server2_work(websocket, path):
+    global folder_ip
     print("New connection:", websocket.remote_address)
     try:
         async for message in websocket:
             print("Received message from", websocket.remote_address, ":", message)
             if(message=="unique confirm"):
                 clients.add(websocket)
+                wrapped_string = {"folder_ip": folder_ip}
+                json_string = json.dumps(wrapped_string)
+                await send_to_html(json_string)
             else:
                 await send_to_html(message)
     finally:
@@ -44,8 +48,8 @@ async def send_to_html(message):
             clients.remove(client)
 
 clients = set()
-async def main():
-    async with serve(server, "0.0.0.0", 19799):
+async def server2():
+    async with serve(server2_work, "0.0.0.0", 19799):
         print("server start...")
         await asyncio.Future()  # run forever
 
