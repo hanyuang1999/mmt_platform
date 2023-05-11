@@ -32,6 +32,7 @@ class My_Server(BaseHTTPRequestHandler):
         print(json.loads(str(datas,'utf-8'))['SN'])
 
         usr_manager.set_target_ini_item('SH', 'sh_sn', '"'+json.loads(str(datas,'utf-8'))["SN"]+'"')
+        usr_manager.set_target_ini_item('SH', 'test_type', '"'+json.loads(str(datas,'utf-8'))["TestType"]+'"')
  
 
         usr_manager.target_exe_start("python3 ./Sensorhub_Test/scripts/main.py")

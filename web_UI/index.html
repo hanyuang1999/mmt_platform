@@ -72,6 +72,12 @@
     .active {
       display: block;
     }
+
+    .checkbox-container {
+      display: flex;
+      justify-content: space-between;
+      max-width: 300px;
+    }
   </style>
 
   <!-- Custom styles for this template -->
@@ -81,7 +87,7 @@
   <div class="top-nav">
     <ul>
         <li><a href="">首页</a></li>
-        <li><a href="javascript:void(0)" id="openModal">自定义测试</a></li>
+        <li><a href="javascript:void(0)" id="openModal">历史测试记录</a></li>
         <li><a href="/result">测试记录</a></li>
     </ul>
   </div>
@@ -89,7 +95,41 @@
   <div id="myModal" class="modal">
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
-      <p>这是一个简单的弹窗。</p>
+      <p>历史测试记录</p>
+      <table id="history_table">
+        <colgroup>
+          <col style="width: 40%;">
+          <col style="width: 40%;">
+          <col style="width: 20%;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>完成时间</th>
+            <th>SN号</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2023-4-28 15:21:43</td>
+            <td>77</td>
+            <td><a href="./assets/test.html">查看</a></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td>2023-4-28 15:52:29</td>
+            <td>23</td>
+            <td><a href="file:///C:/Users/jerry.han/Desktop/SH_11_12_20230314_171643/index.html">查看</a></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td>2023-5-6 11:40:46</td>
+            <td>11_22</td>
+            <td><a href="file:///C:/Users/jerry.han/Desktop/SH_11_12_20230314_171643/index.html">查看</a></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 <div id="index" class="content">
@@ -106,6 +146,12 @@
         <input type="" class="form-control" id="string_result" placeholder="***">
         <label for="floatingPassword">测试结果</label>
       </div>
+      <div class="checkbox-container">
+        <label><input type="checkbox" id="all" onchange="checkAll();" checked> 全部</label>
+        <label><input type="checkbox" class="partial" value="部分1" onchange="uncheckAll();"> 部分1</label>
+        <label><input type="checkbox" class="partial" value="部分2" onchange="uncheckAll();"> 部分2</label>
+        <label><input type="checkbox" class="partial" value="部分3" onchange="uncheckAll();"> 部分3</label>
+      </div>
       <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
       <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="../assets/brand/mo.png" alt="" width="60" height="10"></p>
     </form>
@@ -113,7 +159,7 @@
 </div>
 
 <div class="right-column">
-  <p>当前进度</p>
+  <p id="title_text"></p>
   <p id="cur_step">Waiting...</p>
   <p>
     <progress max="8" value="0" id="progressBar"></progress>
@@ -150,11 +196,15 @@
 <script>
   const socket = new WebSocket('ws://10.8.146.24:19799');
 	var btn=document.getElementById("btn");
-	var input_SN=document.getElementById("string_Input_SN")
-	var output_res=document.getElementById("string_result")
+	var input_SN=document.getElementById("string_Input_SN");
+	var output_res=document.getElementById("string_result");
   var current_step = document.getElementById('cur_step');
-  var tableBody = document.querySelector("#result_table tbody")
-  var progressBar = document.getElementById("progressBar")
+  var tableBody = document.querySelector("#result_table tbody");
+  var progressBar = document.getElementById("progressBar");
+  const allCheckbox = document.getElementById("all");
+  const partialCheckboxes = document.getElementsByClassName("partial");
+  var titleText = "测试未启动";
+  document.getElementById("title_text").innerText=titleText;
 
   //socket数据传输相关
   socket.onopen = function() {
@@ -218,16 +268,27 @@
   async function start()
   {
     console.log("start",input_SN.value)
-    HTTP_POST(input_SN.value)
-    console.log("stop")
+    var test_type= "";
+    for (let i = 0; i < partialCheckboxes.length; i++) {
+      if (partialCheckboxes[i].checked) {
+        test_type=test_type+(i+1);
+        titleText="【自定义测试】 当前进度：";
+        document.getElementById("title_text").innerText=titleText;
+      }
+    }
+    if(test_type==""){
+      test_type="0";
+      titleText="【全流程测试】 当前进度：";
+      document.getElementById("title_text").innerText=titleText;
+    }
+    HTTP_POST(input_SN.value,test_type);
   }
 
-  function HTTP_POST(e){
+  function HTTP_POST(sn_value,test_type){
     var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
     httpRequest.open('POST', 'http://10.8.146.24:19999/', true); //第二步：打开连接
     httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-    console.log(e)
-    var obj = { SN:e };
+    var obj = { SN:sn_value, TestType:test_type };
     httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
     httpRequest.onreadystatechange = function () {
       console.log("发送成功等请求。。。")
@@ -244,15 +305,33 @@
     document.getElementById('myModal').style.display = 'block';
   });
 
-document.getElementById('closeModal').addEventListener('click', function() {
-  document.getElementById('myModal').style.display = 'none';
-});
-
-window.addEventListener('click', function(event) {
-  if (event.target === document.getElementById('myModal')) {
+  document.getElementById('closeModal').addEventListener('click', function() {
     document.getElementById('myModal').style.display = 'none';
+  });
+
+  window.addEventListener('click', function(event) {
+    if (event.target === document.getElementById('myModal')) {
+      document.getElementById('myModal').style.display = 'none';
+    }
+  });
+
+  function checkAll() {
+    if (allCheckbox.checked) {
+      for (let i = 0; i < partialCheckboxes.length; i++) {
+          partialCheckboxes[i].checked = false;
+      }
+    }
   }
-});
+
+  function uncheckAll() {
+    for (let i = 0; i < partialCheckboxes.length; i++) {
+      if (partialCheckboxes[i].checked) {
+        allCheckbox.checked = false;
+        return;
+      }
+    }
+    allCheckbox.checked = true;
+  }
 
 </script>
     
