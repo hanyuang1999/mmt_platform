@@ -88,7 +88,7 @@
     <ul>
         <li><a href="">首页</a></li>
         <li><a href="javascript:void(0)" id="openModal">历史测试记录</a></li>
-        <li><a href="/result">测试记录</a></li>
+        <li><a href="#" id="dynamicLink">测试记录</a></li>
     </ul>
   </div>
 
@@ -194,7 +194,7 @@
 </div>
 
 <script>
-  const socket = new WebSocket('ws://10.8.146.24:19799');
+  const socket = new WebSocket('ws://localhost:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN");
 	var output_res=document.getElementById("string_result");
@@ -204,6 +204,7 @@
   const allCheckbox = document.getElementById("all");
   const partialCheckboxes = document.getElementsByClassName("partial");
   var titleText = "测试未启动";
+  var resultPort = "http://10.8.117.104:";
   document.getElementById("title_text").innerText=titleText;
 
   //socket数据传输相关
@@ -214,6 +215,11 @@
   
   socket.addEventListener('message', (event) => { // 添加消息监听器
     var data = JSON.parse(event.data)
+    if(Object.keys(data).length==1){
+      resultPort = resultPort + data["result_port"]
+      console.log(resultPort)
+      document.getElementById("dynamicLink").href = resultPort;
+    }
     if(Object.keys(data).length==3){
       current_step.textContent = data["cur_step"] + ": " + data["remark"]; 
       progressBar.value = data["step_id"]
