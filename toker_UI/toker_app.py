@@ -68,7 +68,7 @@ def toker_init(target_path,ini_path,host,port):
     usr_manager.set_addr(host,port)
 
 if __name__ == '__main__':
-    toker_init("./Sensorhub_Test","./Sensorhub_Test/SH_info.ini",'0.0.0.0',19999)
+    toker_init("./Sensorhub_Test","./Sensorhub_Test/SH_info.ini",'0.0.0.0',29799)
     print(usr_manager.get_target_ini_item("SH",'testresult'))
     
    
