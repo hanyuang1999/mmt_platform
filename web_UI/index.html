@@ -87,7 +87,7 @@
   <div class="top-nav">
     <ul>
         <li><a href="">首页</a></li>
-        <li><a href="javascript:void(0)" id="openModal">历史测试记录</a></li>
+        <!-- <li><a href="javascript:void(0)" id="openModal">历史测试记录</a></li> -->
         <li><a href="#" id="dynamicLink">测试记录</a></li>
     </ul>
   </div>
@@ -149,8 +149,13 @@
       <!-- <div class="checkbox-container"> -->
         <label style="display: block;"><input type="checkbox" id="all" onchange="checkAll();" checked> 全部</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分1" onchange="uncheckAll();"> sensorhub连接测试</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分2" onchange="uncheckAll();"> testdemo检测</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分3" onchange="uncheckAll();"> emc_monitor检测</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分2" onchange="uncheckAll();"> sensorhub固件检查与升级</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分3" onchange="uncheckAll();"> isp固件检查与升级</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分4" onchange="uncheckAll();"> 相机api_cmd检测</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分5" onchange="uncheckAll();"> FPGA信号检测</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分6" onchange="uncheckAll();"> 扣板上下电检测</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分7" onchange="uncheckAll();"> testdemo检测</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分8" onchange="uncheckAll();"> emc_monitor检测</label>
       <!-- </div> -->
       <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
       <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="../assets/brand/mo.png" alt="" width="60" height="10"></p>
@@ -304,7 +309,6 @@
         var json = httpRequest.responseText;//获取到服务端返回的数据
             console.log(json);
             output_res.value= "成功启动";
-        console.log("响应概况");
         }
     };
   }	
