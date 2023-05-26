@@ -154,7 +154,7 @@
         <label style="display: block;"><input type="checkbox" class="partial" value="部分4" onchange="uncheckAll();"> 相机api_cmd检测</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分5" onchange="uncheckAll();"> FPGA信号检测</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分6" onchange="uncheckAll();"> 扣板上下电检测</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分7" onchange="uncheckAll();"> testdemo检测</label>
+        <label style="display: block;"><input type="checkbox" class="partial" value="部分7" onchange="uncheckAll();"> 扣板识别检测</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分8" onchange="uncheckAll();"> emc_monitor检测</label>
       <!-- </div> -->
       <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
@@ -193,14 +193,16 @@
       </tr>
     </tbody>
   </table>
+  <p></p>
+  <button style="background-color: red; color: white; width: 150px; height: 50px;" id="btn2" onclick="endProcess()" type="button">终止测试</button>
 </div>
 </div>
 <div id="history">
 </div>
 
 <script>
-  const currentIP = "10.8.241.178";
-  const socket = new WebSocket('ws://10.8.241.178:19799');
+  const currentIP = "10.8.146.24";
+  const socket = new WebSocket('ws://10.8.146.24:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN");
 	var output_res=document.getElementById("string_result");
@@ -210,7 +212,7 @@
   const allCheckbox = document.getElementById("all");
   const partialCheckboxes = document.getElementsByClassName("partial");
   var titleText = "测试未启动";
-  var resultPort = "http://10.8.241.178:";
+  var resultPort = "http://10.8.146.24:";
   document.getElementById("title_text").innerText=titleText;
 
   //socket数据传输相关
@@ -298,7 +300,7 @@
 
   function HTTP_POST(sn_value,test_type){
     var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-    httpRequest.open('POST', 'http://10.8.241.178:29799/', true); //第二步：打开连接
+    httpRequest.open('POST', 'http://10.8.146.24:29799/', true); //第二步：打开连接
     httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
     var obj = { SN:sn_value, TestType:test_type };
     httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
@@ -308,10 +310,20 @@
             console.log("发送成功等请求")
         var json = httpRequest.responseText;//获取到服务端返回的数据
             console.log(json);
-            output_res.value= "成功启动";
+            output_res.value= "启动成功";
         }
     };
-  }	
+  }
+  
+  async function endProcess(){
+    test_type = "0";
+    sn = "terminateAll";
+    HTTP_POST(sn, test_type);
+    HTTP_POST(sn, test_type);
+    HTTP_POST(sn, test_type);
+    output_res.value= "当前测试流程已结束";
+  }
+
   document.getElementById('openModal').addEventListener('click', function() {
     document.getElementById('myModal').style.display = 'block';
   });
