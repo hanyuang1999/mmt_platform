@@ -310,7 +310,7 @@
             console.log("发送成功等请求")
         var json = httpRequest.responseText;//获取到服务端返回的数据
             console.log(json);
-            output_res.value= "当前测试流程已结束";
+            output_res.value= "启动成功";
         }
     };
   }
@@ -321,6 +321,7 @@
     HTTP_POST(sn, test_type);
     HTTP_POST(sn, test_type);
     HTTP_POST(sn, test_type);
+    output_res.value= "当前测试流程已结束";
   }
 
   document.getElementById('openModal').addEventListener('click', function() {
