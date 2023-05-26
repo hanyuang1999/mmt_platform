@@ -15,6 +15,8 @@ signal.signal(signal.SIGINT, signal_handler)
 
 processes = []
 try:
+    if not os.path.exists("./Sensorhub_Test/result"):
+        os.makedirs("./Sensorhub_Test/result")
     command = "allure open ./Sensorhub_Test/result"
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, text=True,start_new_session=False)
     
