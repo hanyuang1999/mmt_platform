@@ -280,7 +280,6 @@
   async function start()
   {
     console.log("start",input_SN.value)
-    output_res.value= "成功启动";
     var test_type= "";
     for (let i = 0; i < partialCheckboxes.length; i++) {
       if (partialCheckboxes[i].checked) {
@@ -309,7 +308,7 @@
             console.log("发送成功等请求")
         var json = httpRequest.responseText;//获取到服务端返回的数据
             console.log(json);
-            output_res.value= "测试流程已结束";
+            output_res.value= "成功启动";
         }
     };
   }	
