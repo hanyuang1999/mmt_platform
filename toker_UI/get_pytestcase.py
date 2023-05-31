@@ -1,36 +1,42 @@
+import os
 import pytest
 
-def pytest_generate_tests(metafunc):
-    if "test_name" in metafunc.fixturenames:
-        test_names = get_test_names_from_directory("tests")
-        metafunc.parametrize("test_name", test_names)
+class TestCaseCollector:
+    def __init__(self):
+        self.test_cases = []
 
-def get_test_names_from_directory(directory):
-    test_names = []
-    test_files = pytest.Pytester(directory).parseconfig().getnode(directory).collect()
-    
-    for item in test_files:
-        if isinstance(item, pytest.Item):
-            test_names.append(item.name)
-        else:
-            test_names.extend(get_test_names_from_item(item))
-            
-    return test_names
+    def pytest_collection_modifyitems(self, items):
+        for item in items:
+            if isinstance(item, pytest.Function):
+                self.test_cases.append(item.name)
 
-def get_test_names_from_item(item):
-    test_names = []
 
-    for sub_item in item.collect():
-        if isinstance(sub_item, pytest.Item):
-            test_names.append(sub_item.name)
-        else:
-            test_names.extend(get_test_names_from_item(sub_item))
+def get_testcase_names(test_directory):
+    collector = TestCaseCollector()
+    pytest.main(["--collect-only", "-q", test_directory], plugins=[collector])
+    return collector.test_cases
 
-    return test_names
+def get_dir_structure(base_path):
+    dir_structure = {}
 
-# 示例：获取"tests"目录下所有测试项的名称
+    for folder in os.listdir(base_path):
+        folder_path = os.path.join(base_path, folder)
+        
+        if os.path.isdir(folder_path):
+            dir_structure[folder] = {}
+
+            for file in os.listdir(folder_path):
+                file_path = os.path.join(folder_path, file)
+
+                if os.path.isfile(file_path):
+                    dir_structure[folder][file] = get_testcase_names(file_path)
+
+    return dir_structure
+
+
 if __name__ == "__main__":
-    directory_path = "tests"
-    test_names = get_test_names_from_directory(directory_path)
-    for name in test_names:
-        print(name)
+    base_path = "./devcase"
+    dir_structure = get_dir_structure(base_path)
+
+
+
