@@ -138,15 +138,7 @@
     <form>
       <img class="mb-4" src="./assets/brand/Logo.png" alt="" width="72" height="72">
       <h1 class="h3 mb-3 fw-normal">Sensorhub 入库测试</h1>
-      <div class="form-floating">
-        <input type="" class="form-control" id="string_Input_SN" placeholder="***">
-        <label for="floatingInput">请输入Sensorhub SN号</label>
-      </div>
-      <div class="form-floating">
-        <input type="" class="form-control" id="string_result" placeholder="***">
-        <label for="floatingPassword">启动状态</label>
-      </div>
-      <!-- <div class="checkbox-container"> -->
+
         <label style="display: block;"><input type="checkbox" id="all" onchange="checkAll();" checked> 全部</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分1" onchange="uncheckAll();"> sensorhub连接测试</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分2" onchange="uncheckAll();"> sensorhub固件检查与升级</label>
@@ -156,14 +148,21 @@
         <label style="display: block;"><input type="checkbox" class="partial" value="部分6" onchange="uncheckAll();"> 扣板上下电检测</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分7" onchange="uncheckAll();"> 扣板识别检测</label>
         <label style="display: block;"><input type="checkbox" class="partial" value="部分8" onchange="uncheckAll();"> emc_monitor检测</label>
-      <!-- </div> -->
-      <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
+
       <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="../assets/brand/mo.png" alt="" width="60" height="10"></p>
     </form>
   </main>
 </div>
 
 <div class="right-column">
+  <main class="form-signin w-100 m-auto">
+    <div class="form-floating">
+      <input type="" class="form-control" id="string_Input_SN" placeholder="***">
+      <label for="floatingInput">请输入Sensorhub SN号</label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" id="btn1" onclick="start()" type="button">开始测试</button>
+    <button class="w-100 btn btn-lg btn-danger" id="btn2" onclick="endProcess()" type="button">终止测试</button>
+  </main>
   <p id="title_text"></p>
   <p id="cur_step">Waiting...</p>
   <p>
@@ -194,7 +193,6 @@
     </tbody>
   </table>
   <p></p>
-  <button style="background-color: red; color: white; width: 150px; height: 50px;" id="btn2" onclick="endProcess()" type="button">终止测试</button>
 </div>
 </div>
 <div id="history">
