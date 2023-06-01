@@ -37,6 +37,6 @@ def get_dir_structure(base_path):
 if __name__ == "__main__":
     base_path = "./devcase"
     dir_structure = get_dir_structure(base_path)
-
+    print(dir_structure)
 
 
