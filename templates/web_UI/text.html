@@ -1,0 +1,51 @@
+<!-- my_app/templates/my_app/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Example</title>
+    {% csrf_token %}
+</head>
+<body>
+<button id="send-data-button">发送数据</button>
+
+<script>
+document.getElementById("send-data-button").addEventListener("click", function() {
+    sendData();
+});
+
+function sendData() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '{% url "my_view" %}');
+    //xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            console.log(this.responseText);
+        }
+    };
+    var data = "name=haodiao&age=24"; // replace with your data
+    xhr.send(data);
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+
+
+</body>
+</html>
