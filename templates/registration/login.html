@@ -1,0 +1,69 @@
+{% extends "base_for_login.html" %}
+
+
+{% load static %}
+{% csrf_token %}
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock %}
+{% block body %}
+  <div class="container">
+    <h1 class="text-center logo my-4">
+      <a href="{% url 'login' %}" style="font-family: Arial, sans-serif; color: #005dd8; font-weight:bold;">Sensorhub Test Platform</a>
+    </h1>
+    <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6 col-sm-8">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title">Log in</h3>
+            <form method="post" novalidate>
+              {% csrf_token %}
+              {% include 'includes/form.html' %}
+              <button type="submit" class="btn btn-primary btn-block">Log in</button>
+            </form>
+          </div>
+          <div class="card-footer text-muted text-center">
+            New to Django Boards? <a href="{% url 'signup' %}">Sign up</a>
+          </div>
+        </div>
+        <div class="text-center py-2">
+          <small>
+            <a href="#" class="text-muted">Forgot your password?</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+
+{% comment %} {% block title %}登录{% endblock %}
+
+{% block content %}
+    <h1>登录</h1>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <label for="username">用户名：</label>
+        <input type="text" id="username" name="username"><br>
+
+        <label for="password">密码：</label>
+        <input type="password" id="password" name="password"><br>
+
+        <button type="submit">登录</button>
+    </form>
+{% endblock %} {% endcomment %}
+
+
+
+
+{% comment %} {% extends "base.html" %}
+
+{% block content %}
+  <h2>登录</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">登录</button>
+  </form>
+{% endblock %} {% endcomment %}
