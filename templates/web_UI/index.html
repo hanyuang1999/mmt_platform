@@ -49,16 +49,6 @@
       fill: currentColor;
     }
 
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #333;
-    }
-    li {
-      float: left;
-    }
     li a {
       display: block;
       color: white;
@@ -75,12 +65,6 @@
     .active {
       display: block;
     }
-
-    .checkbox-container {
-      display: flex;
-      justify-content: space-between;
-      max-width: 300px;
-    }
   </style>
 
   <!-- Custom styles for this template -->
@@ -89,9 +73,9 @@
 <body class="text-center">
   <div class="top-nav">
     <ul>
-        <li><a href="">首页</a></li>
+        <li style="float: left;"><a href="">首页</a></li>
         <!-- <li><a href="javascript:void(0)" id="openModal">历史测试记录</a></li> -->
-        <li><a href="#" id="dynamicLink">测试记录</a></li>
+        <li style="float: left;"><a href="#" id="dynamicLink">测试记录</a></li>
     </ul>
   </div>
 
@@ -141,32 +125,26 @@
     <form>   
       <img class="mb-4" src="{% static 'web_UI_static/assets/brand/Logo.png' %}" alt="" width="72" height="72">
       <h1 class="h3 mb-3 fw-normal">Sensorhub 入库测试</h1>
-      <div class="form-floating">
-        <input type="" class="form-control" id="string_Input_SN" placeholder="***">
-        <label for="floatingInput">请输入Sensorhub SN号</label>
+      <label for="folder-select">选择文件夹：</label>
+      <select id="folder-select">
+          <option>...</option>
+      </select>
+      <div id="subfolders-container" style="width: 300px; height: 400px; border: 1px solid #ccc; overflow-y: scroll;">
       </div>
-      <div class="form-floating">
-        <input type="" class="form-control" id="string_result" placeholder="***">
-        <label for="floatingPassword">启动状态</label>
-      </div>
-      <!-- <div class="checkbox-container"> -->
-        <label style="display: block;"><input type="checkbox" id="all" onchange="checkAll();" checked> 全部</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分1" onchange="uncheckAll();"> sensorhub连接测试</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分2" onchange="uncheckAll();"> sensorhub固件检查与升级</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分3" onchange="uncheckAll();"> isp固件检查与升级</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分4" onchange="uncheckAll();"> 相机api_cmd检测</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分5" onchange="uncheckAll();"> FPGA信号检测</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分6" onchange="uncheckAll();"> 扣板上下电检测</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分7" onchange="uncheckAll();"> testdemo检测</label>
-        <label style="display: block;"><input type="checkbox" class="partial" value="部分8" onchange="uncheckAll();"> emc_monitor检测</label>
-      <!-- </div> -->
-      <button class="w-100 btn btn-lg btn-primary" id="btn" onclick="start()" type="button">开始测试</button>
       <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="{% static 'web_UI_static/assets/brand/mo.png' %}" alt="" width="60" height="10"></p>
     </form>
   </main>
 </div>
 
 <div class="right-column">
+  <main class="form-signin w-100 m-auto">
+    <div class="form-floating">
+      <input type="" class="form-control" id="string_Input_SN" placeholder="***">
+      <label for="floatingInput">请输入Sensorhub SN号</label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" id="btn1" onclick="start()" type="button">开始测试</button>
+    <button class="w-100 btn btn-lg btn-danger" id="btn2" onclick="endProcess()" type="button">终止测试</button>
+  </main>
   <p id="title_text"></p>
   <p id="cur_step">Waiting...</p>
   <p>
@@ -215,6 +193,74 @@
   var titleText = "测试未启动";
   var resultPort = "http://10.8.241.178:";
   document.getElementById("title_text").innerText=titleText;
+  const fileStructure = {'aqi': {'Test_3.py': ['test_aqi1', 'test_aqi2']}, 'gibi': {'Test_1.py': ['test_1', 'test_2', 'test_3'], 'Test_2.py': ['test_4', 'test_5', 'test_6']}};
+  const subfoldersContainer = document.getElementById('subfolders-container');
+  const folderSelect = document.getElementById('folder-select');
+  const folderList = Object.keys(fileStructure);
+  folderList.forEach(folder => {
+      const folderOption = document.createElement('option');
+      folderOption.value = folder;
+      folderOption.textContent = folder;
+      folderSelect.appendChild(folderOption);
+  });
+        
+  // 监听下拉选项的变化
+  folderSelect.addEventListener('change', function() {
+      const selectedFolder = this.value;
+      if (selectedFolder) {
+          const subfolders = fileStructure[selectedFolder];
+          let subfoldersHtml = '';
+          for (const subfolder in subfolders) {
+              subfoldersHtml += `
+              <div class="subfolder-item">
+                  <input type="checkbox" id="${subfolder}" class="subfolder-checkbox" data-folder="${selectedFolder}">
+                  <label for="${subfolder}">${subfolder}</label>
+                  <div id="${subfolder}-files" class="files-container" style="display:none;">
+                      <ul>
+              `;
+          for (const file in subfolders[subfolder]) {
+          subfoldersHtml += `
+              <li>
+                  <input type="checkbox" id="${file}" class="file-checkbox" data-filename="${subfolders[subfolder][file]}">
+                  <label for="${file}">${subfolders[subfolder][file]}</label>
+              </li>
+              `;
+          }
+          subfoldersHtml += `
+                      </ul>
+                  </div>
+              </div>
+          `;
+          }
+          subfoldersContainer.innerHTML = subfoldersHtml;
+      } else {
+          subfoldersDiv.innerHTML = '';
+      }
+  });
+  // 监听勾选框的变化
+  document.addEventListener('change', function(event) {
+      if (event.target.matches('.subfolder-checkbox')) {
+          const folder = event.target.getAttribute('data-folder');
+          const subfolder = event.target.id;
+          const filesDiv = document.getElementById(`${subfolder}-files`);
+          if (event.target.checked) {
+              filesDiv.style.display = 'block';
+          } else {
+              filesDiv.style.display = 'none';
+          }
+      }
+  });
+  function getSelectedFiles() {
+      const selectedFiles = [];
+      const fileCheckboxes = document.querySelectorAll('.file-checkbox');
+      fileCheckboxes.forEach(fileCheckbox => {
+          if (fileCheckbox.checked) {
+              selectedFiles.push(fileCheckbox.getAttribute('data-filename'));
+          }
+      });
+      console.log(selectedFiles);
+  }
+
 
   //socket数据传输相关
   socket.onopen = function() {
