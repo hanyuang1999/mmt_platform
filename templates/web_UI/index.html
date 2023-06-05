@@ -193,10 +193,10 @@
   var titleText = "测试未启动";
   var resultPort = "http://10.8.241.178:";
   document.getElementById("title_text").innerText=titleText;
-  const fileStructure = {'aqi': {'Test_3.py': ['test_aqi1', 'test_aqi2']}, 'gibi': {'Test_1.py': ['test_1', 'test_2', 'test_3'], 'Test_2.py': ['test_4', 'test_5', 'test_6']}};
-  const subfoldersContainer = document.getElementById('subfolders-container');
-  const folderSelect = document.getElementById('folder-select');
-  const folderList = Object.keys(fileStructure);
+  var fileStructure = JSON.parse('{{ dir_structure|safe }}');
+  var subfoldersContainer = document.getElementById('subfolders-container');
+  var folderSelect = document.getElementById('folder-select');
+  var folderList = Object.keys(fileStructure);
   folderList.forEach(folder => {
       const folderOption = document.createElement('option');
       folderOption.value = folder;
