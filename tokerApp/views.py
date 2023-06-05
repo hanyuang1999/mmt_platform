@@ -3,14 +3,18 @@ from django import http
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Toker
+from .models import Record
 from django.views import View
 from configparser import ConfigParser
 from django.http import HttpResponse, HttpResponseForbidden
 from functools import wraps
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
-
+from django.utils import timezone
+from datetime import datetime
 import json
 import os
 import time
@@ -29,6 +33,33 @@ def login_required_decorator(view_func):
             return redirect(reverse("registration/login.html"))
         return view_func(request, *args, **kwargs)
     return _wrapped_view
+
+def record_list(request):
+    start_time = request.GET.get('start_time')
+    end_time = request.GET.get('end_time')
+    if start_time and end_time:
+        start_time = timezone.make_aware(datetime.fromisoformat(start_time))
+        end_time = timezone.make_aware(datetime.fromisoformat(end_time))
+        records = Record.objects.filter(time__gte=start_time, time__lte=end_time)
+    else:
+        records = Record.objects.all()
+    records = list(records.values())
+    return JsonResponse(records, safe=False)
+
+@csrf_exempt
+def add_record(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        time = data.get('time')
+        name = data.get('name')
+        remark = data.get('remark')
+
+        record = Record(time=time, name=name, remark=remark)
+        record.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Record added successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 class TestCaseCollector:
     def __init__(self):
@@ -103,7 +134,7 @@ class My_Server(View):
         self.set_target_ini_item('SH', 'sh_sn', '"'+json.loads(datas.decode('utf-8'))['SN']+'"')
         self.set_target_ini_item('SH', 'test_type', '"'+json.loads(datas.decode('utf-8'))['TestType']+'"')
                 
-        cmd = "python3 ./tokerApp/Sensorhub_Test/scripts/main.py"
+        cmd = "python ./tokerApp/Sensorhub_Test/scripts/main.py"
         cmd_res = subprocess.run(cmd.split())
         time.sleep(1)
 

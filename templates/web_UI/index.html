@@ -69,12 +69,13 @@
 
   <!-- Custom styles for this template -->
   <link href="{% static 'web_UI_static/sign-in.css' %}" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="text-center">
   <div class="top-nav">
     <ul>
         <li style="float: left;"><a href="">首页</a></li>
-        <!-- <li><a href="javascript:void(0)" id="openModal">历史测试记录</a></li> -->
+        <li style="float: left;"><a href="javascript:void(0)" id="openModal">历史测试记录</a></li>
         <li style="float: left;"><a href="#" id="dynamicLink">测试记录</a></li>
     </ul>
   </div>
@@ -83,6 +84,9 @@
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
       <p>历史测试记录</p>
+      <label>开始时间：<input type="datetime-local" id="start-time"></label>
+      <label>结束时间：<input type="datetime-local" id="end-time"></label>
+      <button id="filter-btn">筛选</button>
       <table id="history_table">
         <colgroup>
           <col style="width: 40%;">
@@ -96,25 +100,7 @@
             <th>操作</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>2023-4-28 15:21:43</td>
-            <td>77</td>
-            <td><a href="{% static 'web_UI_static/assets/test.html' %}">查看</a></td>
-            <td> </td>  
-          </tr>
-          <tr>
-            <td>2023-4-28 15:52:29</td>
-            <td>23</td>
-            <td><a href="file:///C:/Users/jerry.han/Desktop/SH_11_12_20230314_171643/index.html">查看</a></td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td>2023-5-6 11:40:46</td>
-            <td>11_22</td>
-            <td><a href="file:///C:/Users/jerry.han/Desktop/SH_11_12_20230314_171643/index.html">查看</a></td>
-            <td> </td>
-          </tr>
+        <tbody id="record-table">
         </tbody>
       </table>
     </div>
@@ -180,8 +166,8 @@
 </div>
 
 <script>
-  const currentIP = "10.8.241.178";
-  const socket = new WebSocket('ws://10.8.241.178:19799');
+  const currentIP = "10.8.146.24";
+  const socket = new WebSocket('ws://10.8.146.24:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN");
 	var output_res=document.getElementById("string_result");
@@ -191,7 +177,7 @@
   const allCheckbox = document.getElementById("all");
   const partialCheckboxes = document.getElementsByClassName("partial");
   var titleText = "测试未启动";
-  var resultPort = "http://10.8.241.178:";
+  var resultPort = "http://10.8.146.24:";
   document.getElementById("title_text").innerText=titleText;
   var fileStructure = JSON.parse('{{ dir_structure|safe }}');
   var subfoldersContainer = document.getElementById('subfolders-container');
@@ -258,7 +244,14 @@
               selectedFiles.push(fileCheckbox.getAttribute('data-filename'));
           }
       });
-      console.log(selectedFiles);
+      var selectString = "";
+      for(var i =0;i<selectedFiles.length;i++){
+        selectString = selectString + selectedFiles[i] + " or ";
+      }
+      if(selectedFiles.length!=0){
+        selectString = selectString.slice(0,-4);
+      }
+      return selectString;
   }
 
 
@@ -346,20 +339,17 @@
   async function start()
   {
     console.log("start",input_SN.value)
-    output_res.value= "成功启动";
-    var test_type= "";
-    for (let i = 0; i < partialCheckboxes.length; i++) {
-      if (partialCheckboxes[i].checked) {
-        test_type=test_type+(i+1);
-        titleText="【自定义测试】 当前进度：";
-        document.getElementById("title_text").innerText=titleText;
-      }
-    }
+    var test_type= getSelectedFiles();
     if(test_type==""){
       test_type="0";
       titleText="【全流程测试】 当前进度：";
       document.getElementById("title_text").innerText=titleText;
     }
+    else{
+      titleText="【自定义测试】 当前进度：";
+      document.getElementById("title_text").innerText=titleText;
+    }
+    output_res.value= "成功启动";
     HTTP_POST(input_SN.value,test_type);
   }
 
@@ -386,7 +376,7 @@
 {% comment %} 
   function HTTP_POST(sn_value,test_type){
     var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-    httpRequest.open('POST', 'http://10.9.61.37:29799/', true); //第二步：打开连接
+    httpRequest.open('POST', 'http://10.8.146.24:29799/', true); //第二步：打开连接
     httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
     var obj = { SN:sn_value, TestType:test_type };
     httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
@@ -414,23 +404,36 @@
     }
   });
 
-  function checkAll() {
-    if (allCheckbox.checked) {
-      for (let i = 0; i < partialCheckboxes.length; i++) {
-          partialCheckboxes[i].checked = false;
-      }
+  function fetch_records(start_time, end_time) {
+    let url = "/records/";
+    if (start_time && end_time) {
+      url += `?start_time=${start_time}&end_time=${end_time}`;
     }
+    
+    $.getJSON(url, function (data) {
+      let tbody = $("#record-table");
+      tbody.empty();
+
+      data.forEach((record) => {
+        let row = $("<tr>");
+        row.append($("<td>").text(record.time));
+        row.append($("<td>").text(record.name));
+        row.append($("<td>").html(`<a href="${record.remark}">查看</a>`));
+        tbody.append(row);
+      });
+    });
   }
 
-  function uncheckAll() {
-    for (let i = 0; i < partialCheckboxes.length; i++) {
-      if (partialCheckboxes[i].checked) {
-        allCheckbox.checked = false;
-        return;
-      }
-    }
-    allCheckbox.checked = true;
-  }
+  $(document).ready(function () {
+    fetch_records(); // 初始加载，不带时间筛选
+
+    $("#filter-btn").click(function () {
+      const start_time = $("#start-time").val();
+      const end_time = $("#end-time").val();
+      fetch_records(start_time, end_time);
+    });
+  });
+
 
 </script>
     
