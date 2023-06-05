@@ -3,18 +3,23 @@ from django import http
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Toker
+from .models import Record
 from django.views import View
 from configparser import ConfigParser
 from django.http import HttpResponse, HttpResponseForbidden
 from functools import wraps
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
-
+from django.utils import timezone
+from datetime import datetime
 import json
 import os
 import time
 import subprocess
+import pytest
 
 # Create your views here.
 # def index(request):
@@ -28,6 +33,65 @@ def login_required_decorator(view_func):
             return redirect(reverse("registration/login.html"))
         return view_func(request, *args, **kwargs)
     return _wrapped_view
+
+def record_list(request):
+    start_time = request.GET.get('start_time')
+    end_time = request.GET.get('end_time')
+    if start_time and end_time:
+        start_time = timezone.make_aware(datetime.fromisoformat(start_time))
+        end_time = timezone.make_aware(datetime.fromisoformat(end_time))
+        records = Record.objects.filter(time__gte=start_time, time__lte=end_time)
+    else:
+        records = Record.objects.all()
+    records = list(records.values())
+    return JsonResponse(records, safe=False)
+
+@csrf_exempt
+def add_record(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        time = data.get('time')
+        name = data.get('name')
+        remark = data.get('remark')
+
+        record = Record(time=time, name=name, remark=remark)
+        record.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Record added successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+class TestCaseCollector:
+    def __init__(self):
+        self.test_cases = []
+
+    def pytest_collection_modifyitems(self, items):
+        for item in items:
+            if isinstance(item, pytest.Function):
+                self.test_cases.append(item.name)
+
+
+def get_testcase_names(test_directory):
+    collector = TestCaseCollector()
+    pytest.main(["--collect-only", "-q", test_directory], plugins=[collector])
+    return collector.test_cases
+
+def get_dir_structure(base_path):
+    dir_structure = {}
+
+    for folder in os.listdir(base_path):
+        folder_path = os.path.join(base_path, folder)
+        
+        if os.path.isdir(folder_path):
+            dir_structure[folder] = {}
+
+            for file in os.listdir(folder_path):
+                file_path = os.path.join(folder_path, file)
+
+                if os.path.isfile(file_path):
+                    dir_structure[folder][file] = get_testcase_names(file_path)
+
+    return dir_structure
     
 
 class My_Server(View):
@@ -45,7 +109,12 @@ class My_Server(View):
         return super().dispatch(*args, **kwargs)
 
     def get(self, request):
-        return render(request, 'web_UI/index.html')
+        base_path = "/sensorhub_web_toker/web_toker/templates/testcase/"
+        dir_structure = get_dir_structure(base_path)
+        context = {
+            'dir_structure':json.dumps(dir_structure)
+        }
+        return render(request, 'web_UI/index.html', context)
     
     def post(self, request):
         print("Get POST requst...")
@@ -65,7 +134,7 @@ class My_Server(View):
         self.set_target_ini_item('SH', 'sh_sn', '"'+json.loads(datas.decode('utf-8'))['SN']+'"')
         self.set_target_ini_item('SH', 'test_type', '"'+json.loads(datas.decode('utf-8'))['TestType']+'"')
                 
-        cmd = "python3 ./tokerApp/Sensorhub_Test/scripts/main.py"
+        cmd = "python ./tokerApp/Sensorhub_Test/scripts/main.py"
         cmd_res = subprocess.run(cmd.split())
         time.sleep(1)
 
