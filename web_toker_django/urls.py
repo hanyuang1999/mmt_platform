@@ -29,6 +29,7 @@ urlpatterns = [
     path('login', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('signup/', accounts_views.signup, name='signup'),
     path('logout/', auth_views.LoginView.as_view(), name='logout'),
+    path('upload_folder/', views.upload_file, name='upload_folder'),
     path('records/', views.record_list, name='record_list'),
     path('records/add/', views.add_record, name='add_record')
     

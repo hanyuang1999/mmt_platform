@@ -11,10 +11,10 @@ from functools import wraps
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from datetime import datetime
+from django.core.files.storage import default_storage
 import json
 import os
 import time
@@ -60,6 +60,29 @@ def add_record(request):
         return JsonResponse({'status': 'success', 'message': 'Record added successfully'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt # 禁用CSRF令牌，仅为测试目的，请确保在生产环境中添加适当的安全措施
+def upload_file(request):
+    if request.method == 'POST':
+        print("start uploading...")
+        server_root_folder = './templates/testcase/'
+        file = request.FILES['file']
+        relative_path = request.POST.get('relative_path')
+
+        # 使用os.path.join创建服务器上的完整路径
+        full_path = os.path.join(server_root_folder, relative_path)
+
+        # 确保路径中的文件夹存在，否则创建它们
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+        # 将上传的文件保存到目标路径
+        with open(full_path, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+
+        return JsonResponse({'status': 'ok', 'message': '文件上传成功'})
+    else:
+        return JsonResponse({'status': 'error', 'message': '无效请求'})
 
 class TestCaseCollector:
     def __init__(self):

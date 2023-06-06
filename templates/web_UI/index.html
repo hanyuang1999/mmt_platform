@@ -117,6 +117,13 @@
       </select>
       <div id="subfolders-container" style="width: 300px; height: 400px; border: 1px solid #ccc; overflow-y: scroll;">
       </div>
+      {% comment %} <form method="POST" action="10.9.61.37:8090/upload_folder/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="folder" webkitdirectory directory multiple>
+        <button type="submit">Upload Folder</button>
+      </form> {% endcomment %}
+      <input type="file" id="folderInput" webkitdirectory directory multiple />
+      <button onclick="uploadFolder()"> Upload Folder </button>
       <p class="mt-5 mb-3 text-muted">&copy; BUILD BY MOMENTA/2023.3.10  <img class="mb-4" src="{% static 'web_UI_static/assets/brand/mo.png' %}" alt="" width="60" height="10"></p>
     </form>
   </main>
@@ -373,23 +380,36 @@
     httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
   }	
 
-{% comment %} 
-  function HTTP_POST(sn_value,test_type){
-    var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-    httpRequest.open('POST', 'http://10.8.146.24:29799/', true); //第二步：打开连接
-    httpRequest.setRequestHeader("Content-type","multipart/form-data; boundary=----WebKitFormBoundaryypzmvcUdKsqJRGVn" );//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-    var obj = { SN:sn_value, TestType:test_type };
-    httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
-    httpRequest.onreadystatechange = function () {
-      console.log("发送成功等请求。。。")
-        if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            console.log("发送成功等请求")
-        var json = httpRequest.responseText;//获取到服务端返回的数据
-            console.log(json);
-            output_res.value= "测试流程已结束";
-        }
-    };
-  }	 {% endcomment %}
+  function uploadFolder(){
+    var files = document.getElementById('folderInput').files;
+    var flag = 0;
+    if (files.length === 0){
+        alert("请选择一个文件夹!");
+        return;
+    }
+
+    // 遍历选定文件夹中的所有文件
+    for (var i = 0; i < files.length; i++){
+        var file = files[i];
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', '{% url "upload_folder" %}', true);
+        //httpRequest.setRequestHeader("Content-type", "multipart/form-data");
+        
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('relative_path', file.webkitRelativePath)   // 添加文件相对路径
+        httpRequest.send(formData);
+
+        httpRequest.onreadystatechange = function(){
+            if (httpRequest.readyState == 4 && httpRequest.status == 200){
+                var json = httpRequest.responseText;
+                flag = 1;
+                confirm("文件上传成功！");               
+            }
+        };
+    }
+  }
+
   document.getElementById('openModal').addEventListener('click', function() {
     document.getElementById('myModal').style.display = 'block';
   });
