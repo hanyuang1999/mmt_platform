@@ -76,7 +76,7 @@
     <ul>
         <li style="float: left;"><a href="">首页</a></li>
         <li style="float: left;"><a href="javascript:void(0)" id="openModal">历史测试记录</a></li>
-        <li style="float: left;"><a href="#" id="dynamicLink">测试记录</a></li>
+        <!-- <li style="float: left;"><a href="#" id="dynamicLink">测试记录</a></li> -->
     </ul>
   </div>
 
@@ -160,10 +160,6 @@
     </thead>
     <tbody>
       <tr>
-        <td>等待中</td>
-        <td>样例1</td>
-        <td> </td>
-        <td> </td>
       </tr>
     </tbody>
   </table>
@@ -177,7 +173,6 @@
   const socket = new WebSocket('ws://10.8.146.24:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN");
-	var output_res=document.getElementById("string_result");
   var current_step = document.getElementById('cur_step');
   var tableBody = document.querySelector("#result_table tbody");
   var progressBar = document.getElementById("progressBar");
@@ -185,6 +180,7 @@
   const partialCheckboxes = document.getElementsByClassName("partial");
   var titleText = "测试未启动";
   var resultPort = "http://10.8.146.24:";
+  var next_row = 0;
   document.getElementById("title_text").innerText=titleText;
   var fileStructure = JSON.parse('{{ dir_structure|safe }}');
   var subfoldersContainer = document.getElementById('subfolders-container');
@@ -244,11 +240,13 @@
       }
   });
   function getSelectedFiles() {
+      var progressMax = 0;
       const selectedFiles = [];
       const fileCheckboxes = document.querySelectorAll('.file-checkbox');
       fileCheckboxes.forEach(fileCheckbox => {
           if (fileCheckbox.checked) {
               selectedFiles.push(fileCheckbox.getAttribute('data-filename'));
+              progressMax = progressMax + 1;
           }
       });
       var selectString = "";
@@ -258,7 +256,18 @@
       if(selectedFiles.length!=0){
         selectString = selectString.slice(0,-4);
       }
+      progressBar.max = progressMax
       return selectString;
+  }
+
+  function getFilesNum() {
+      var progressMax = 0;
+      const fileCheckboxes = document.querySelectorAll('.file-checkbox');
+      fileCheckboxes.forEach(fileCheckbox => {
+        progressMax = progressMax + 1;
+      });
+      console.log(progressMax);
+      return progressMax;
   }
 
 
@@ -277,10 +286,11 @@
     }
     if(Object.keys(data).length==3){
       current_step.textContent = data["cur_step"] + ": " + data["remark"]; 
-      progressBar.value = data["step_id"]
+      progressBar.value = next_row;
     }
     if(Object.keys(data).length==5){
-      var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+data["step_id"]+") td")
+      var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+ (next_row+2) +") td")
+      next_row = next_row + 1;
       edit_cells[0].textContent = data["log_time"]
       edit_cells[1].textContent = data["test_name"]
       edit_cells[2].textContent = data["result_status"]
@@ -295,7 +305,7 @@
   });
 
   //表格控制
-  for(var i=0;i<7;i++) {
+  for(var i=0;i<8;i++) {
     var newRow = document.createElement("tr");
     var cell1 = document.createElement("td");
     var cell2 = document.createElement("td");
@@ -303,8 +313,8 @@
     var cell4 = document.createElement("td");
 
     // 设置单元格文本内容（这里以i作为示例）
-    cell1.textContent = "等待中"
-    cell2.textContent = "样例"+(i+2);
+    cell1.textContent = "-"
+    cell2.textContent = "";
     cell3.textContent = "";
     cell4.textContent = "";
     newRow.appendChild(cell1);
@@ -347,8 +357,10 @@
   {
     console.log("start",input_SN.value)
     var test_type= getSelectedFiles();
+    console.log(test_type);
     if(test_type==""){
       test_type="0";
+      progressBar.max= getFilesNum();
       titleText="【全流程测试】 当前进度：";
       document.getElementById("title_text").innerText=titleText;
     }
@@ -356,28 +368,35 @@
       titleText="【自定义测试】 当前进度：";
       document.getElementById("title_text").innerText=titleText;
     }
-    output_res.value= "成功启动";
-    HTTP_POST(input_SN.value,test_type);
+    console.log(input_SN)
+    next_row = 0;
+    Process_POST(input_SN.value,test_type);
   }
 
-  function HTTP_POST(sn_value,test_type){
-    var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
-    
+  async function endProcess(){
+    test_type = "0";
+    sn = "terminateAll";
+    Process_POST(sn, test_type);
+    Process_POST(sn, test_type);
+    Process_POST(sn, test_type);
+  }
+
+  function Process_POST(sn_value,test_type){
+    var httpRequest = new XMLHttpRequest();
     httpRequest.onreadystatechange = function () {
       console.log("发送成功等请求。。。")
-        if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
             console.log("发送成功等请求")
-        var json = httpRequest.responseText;//获取到服务端返回的数据
+        var json = httpRequest.responseText;
             console.log(json);
-            output_res.value= "测试流程已结束";
         }
     };
     
-    httpRequest.open('POST', '{% url "my_view" %}', true); //第二步：打开连接
-    httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-    httpRequest.setRequestHeader("X-CSRFToken", getCookie('csrftoken')) // 设置请求头X-CSRFToken的值为CSRF令牌
+    httpRequest.open('POST', '{% url "my_view" %}', true); 
+    httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    httpRequest.setRequestHeader("X-CSRFToken", getCookie('csrftoken')) 
     var obj = { SN:sn_value, TestType:test_type };
-    httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
+    httpRequest.send(JSON.stringify(obj));
   }	
 
   function uploadFolder(){
@@ -411,6 +430,7 @@
   }
 
   document.getElementById('openModal').addEventListener('click', function() {
+    fetch_records();
     document.getElementById('myModal').style.display = 'block';
   });
 

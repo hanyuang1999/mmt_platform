@@ -20,6 +20,8 @@ import os
 import time
 import subprocess
 import pytest
+from threading import Thread
+import signal
 
 # Create your views here.
 # def index(request):
@@ -103,16 +105,17 @@ def get_dir_structure(base_path):
     dir_structure = {}
 
     for folder in os.listdir(base_path):
-        folder_path = os.path.join(base_path, folder)
-        
-        if os.path.isdir(folder_path):
-            dir_structure[folder] = {}
+        if(folder!='.pytest_cache'):
+            folder_path = os.path.join(base_path, folder)
+            
+            if os.path.isdir(folder_path):
+                dir_structure[folder] = {}
 
-            for file in os.listdir(folder_path):
-                file_path = os.path.join(folder_path, file)
+                for file in os.listdir(folder_path):
+                    file_path = os.path.join(folder_path, file)
 
-                if os.path.isfile(file_path):
-                    dir_structure[folder][file] = get_testcase_names(file_path)
+                    if os.path.isfile(file_path):
+                        dir_structure[folder][file] = get_testcase_names(file_path)
 
     return dir_structure
     
@@ -141,29 +144,41 @@ class My_Server(View):
     
     def post(self, request):
         print("Get POST requst...")
-        
         Toker.res = {'result': 'HTTP SERVER OK'}
-        
-        # datas = request.META.get('HTTP_CONTENT_LENGTH', 'Unknown')
         datas = request.body        
-        # print(request.data.decode('uft-8'))
         client_addr = request.META.get('REMOTE_ADDR')
-        # print('headers:', request.META)
         print("post:", request.path, client_addr)
         print(datas)
-      
         print(json.loads(datas.decode('utf-8'))['SN'])
+        if(json.loads(str(datas,'utf-8'))['SN']=="terminateAll"):
+            self.set_target_ini_item('SH', 'running_status', 'False')
+        
+        else:
+            self.set_target_ini_item('SH', 'sh_sn', '"'+json.loads(str(datas,'utf-8'))["SN"]+'"')
+            self.set_target_ini_item('SH', 'test_type', '"'+json.loads(str(datas,'utf-8'))["TestType"]+'"')
+    
 
-        self.set_target_ini_item('SH', 'sh_sn', '"'+json.loads(datas.decode('utf-8'))['SN']+'"')
-        self.set_target_ini_item('SH', 'test_type', '"'+json.loads(datas.decode('utf-8'))['TestType']+'"')
+            command='python /sensorhub_web_toker/web_toker/tokerApp/test_main.py'
+            self.set_target_ini_item('SH', 'running_status', 'True')
+            self.set_target_ini_item('SH', 'testresult', 'Failed')
+            process = subprocess.Popen(command, shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE,preexec_fn=os.setsid)
+            def run_long_command(command, process):
+                while (self.get_target_ini_item("SH",'running_status')=='True'):
+                    pass
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+                if(self.get_target_ini_item('SH', 'testresult')=='Success'):
+                    input_time_str = self.get_target_ini_item('SH', 'testtime')
+                    now_sn = self.get_target_ini_item('SH', 'sh_sn')
+                    input_datetime = datetime.strptime(input_time_str, "%Y%m%d_%H%M%S")
+                    output_time_str1 = input_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    output_date_str2 = input_datetime.strftime("%Y-%m-%d")
+                    now_remark = output_date_str2+"/"+now_sn+"_"+input_time_str
+                    record = Record(time=output_time_str1, name=now_sn, remark=now_remark)
+                    record.save()
+                print("target finish")
                 
-        cmd = "python ./tokerApp/Sensorhub_Test/scripts/main.py"
-        cmd_res = subprocess.run(cmd.split())
-        time.sleep(1)
-
-        while(self.get_target_ini_item("SH", 'running_status') == 'True'):
-            print("target running")
-            time.sleep(1)
+            command_runner = Thread(target=run_long_command, args=(command, process))
+            command_runner.start()
 
         response = HttpResponse('Return POST request')
         response['Content-type'] = 'application/json'        
@@ -188,15 +203,4 @@ class My_Server(View):
         return _
     
         
-    
-    # allowed_referers = ["/root/xhd/web_toker_django/templates/registration/login.html"]
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     referer = request.META.get("HTTP_REFERER")
-    #     if referer is not None:
-    #         for allowed_referer in self.allowed_referers:
-    #             if allowed_referer in referer:
-    #                 return super().dispatch(request, *args, **kwargs)
-
-    #     return HttpResponseForbidden("Access denied")
 
