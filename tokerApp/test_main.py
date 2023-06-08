@@ -112,10 +112,12 @@ if __name__ == '__main__':
     TestDay = str(datetime.date.today())
     resultpath =os.path.join(TestDay,TestTitle)
     os.chdir("/sensorhub_web_toker/web_toker/templates")
-    if test_type!="0":
-        TestResult= os.popen('pytest ./testcase -vs -k \"%s\" --alluredir=./resultLog/%s/%s'%(test_type,TestDay,TestTitle))
+    parts = test_type.split("-")
+    test_folder, test_item = parts
+    if test_item!="ALL":
+        TestResult= os.popen('pytest ./testcase/%s -vs -k \"%s\" --alluredir=./resultLog/%s/%s'%(test_folder,test_item,TestDay,TestTitle))
     else:
-        TestResult= os.popen('pytest ./testcase -vs --alluredir=./resultLog/%s/%s'%(TestDay,TestTitle))
+        TestResult= os.popen('pytest ./testcase/%s -vs --alluredir=./resultLog/%s/%s'%(test_folder,TestDay,TestTitle))
     SH_info,SH_result=shortinfo(TestResult)
     SH_info = SH_info.strip()
     os.popen("allure generate ./resultLog/%s -o ./result/%s --clean" %(resultpath,resultpath))

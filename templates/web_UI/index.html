@@ -282,13 +282,16 @@
     if(Object.keys(data).length==1){
       resultPort = resultPort + data["result_port"] + "/"
     }
-    if(Object.keys(data).length==3){
-      current_step.textContent = data["cur_step"] + ": " + data["remark"]; 
-      progressBar.value = next_row;
+    if(Object.keys(data).length==3){ 
+      progressBar.value = next_row+1;
+      current_step.textContent = "当前进度:["+progressBar.value+"] "+ data["cur_step"] + ": " + data["remark"];
     }
     if(Object.keys(data).length==5){
       var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+ (next_row+2) +") td")
       next_row = next_row + 1;
+      if(next_row==progressBar.max){
+        current_step.textContent = "当前测试已完成"
+      }
       edit_cells[0].textContent = data["log_time"]
       edit_cells[1].textContent = data["test_name"]
       edit_cells[2].textContent = data["result_status"]
@@ -324,9 +327,21 @@
     tableBody.appendChild(newRow);
   }
 
-  function setTable(){
+  function emptyRow(i){
 
+      var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+ (i+2) +") td")
+      edit_cells[0].textContent = "-";
+      edit_cells[1].textContent = "";
+      edit_cells[2].textContent = "";
+      edit_cells[3].textContent = "";
+    
   };
+
+  function emptyTable(){
+    for(var i=0;i<8;i++){
+      emptyRow(i);
+    }
+  }
 
   //网页初始化
   window.onload = (event) =>{
@@ -354,16 +369,18 @@
   async function start()
   {
     console.log("start",input_SN.value)
+    emptyTable();
     var test_type= getSelectedFiles();
     console.log(test_type);
     if(test_type==""){
-      test_type="0";
+      test_type=folderSelect.value+"-ALL";
       progressBar.max= getFilesNum();
-      titleText="【全流程测试】 当前进度：";
+      titleText="【全流程测试】 测试项总数：" + progressBar.max;
       document.getElementById("title_text").innerText=titleText;
     }
     else{
-      titleText="【自定义测试】 当前进度：";
+      test_type=folderSelect.value+"-"+test_type;
+      titleText="【自定义测试】 测试项总数：" + progressBar.max;
       document.getElementById("title_text").innerText=titleText;
     }
     console.log(input_SN)
