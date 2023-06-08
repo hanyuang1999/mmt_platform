@@ -154,8 +154,8 @@ class My_Server(View):
             self.set_target_ini_item('SH', 'running_status', 'False')
         
         else:
-            self.set_target_ini_item('SH', 'sh_sn', '"'+json.loads(str(datas,'utf-8'))["SN"]+'"')
-            self.set_target_ini_item('SH', 'test_type', '"'+json.loads(str(datas,'utf-8'))["TestType"]+'"')
+            self.set_target_ini_item('SH', 'sh_sn', json.loads(str(datas,'utf-8'))["SN"])
+            self.set_target_ini_item('SH', 'test_type', json.loads(str(datas,'utf-8'))["TestType"])
     
 
             command='python /sensorhub_web_toker/web_toker/tokerApp/test_main.py'

@@ -170,6 +170,7 @@
 
 <script>
   const currentIP = "10.8.146.24";
+  var resultPort = "http://10.8.146.24:";
   const socket = new WebSocket('ws://10.8.146.24:19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN");
@@ -179,7 +180,6 @@
   const allCheckbox = document.getElementById("all");
   const partialCheckboxes = document.getElementsByClassName("partial");
   var titleText = "测试未启动";
-  var resultPort = "http://10.8.146.24:";
   var next_row = 0;
   document.getElementById("title_text").innerText=titleText;
   var fileStructure = JSON.parse('{{ dir_structure|safe }}');
@@ -280,9 +280,7 @@
   socket.addEventListener('message', (event) => { // 添加消息监听器
     var data = JSON.parse(event.data)
     if(Object.keys(data).length==1){
-      resultPort = resultPort + data["result_port"]
-      console.log(resultPort)
-      document.getElementById("dynamicLink").href = resultPort;
+      resultPort = resultPort + data["result_port"] + "/"
     }
     if(Object.keys(data).length==3){
       current_step.textContent = data["cur_step"] + ": " + data["remark"]; 
@@ -458,7 +456,7 @@
         let row = $("<tr>");
         row.append($("<td>").text(record.time));
         row.append($("<td>").text(record.name));
-        row.append($("<td>").html(`<a href="${record.remark}">查看</a>`));
+        row.append($("<td>").html(`<a href="${(resultPort+record.remark+"/index.html")}">查看</a>`));
         tbody.append(row);
       });
     });
