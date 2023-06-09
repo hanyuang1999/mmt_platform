@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.108.0">
-  <title>Sensorhub 入库测试</title>
+  <title>VE测试平台</title>
   {% csrf_token %}
 
   <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
@@ -110,8 +110,8 @@
   <main class="form-signin w-100 m-auto">
     <form>   
       <img class="mb-4" src="{% static 'web_UI_static/assets/brand/Logo.png' %}" alt="" width="72" height="72">
-      <h1 class="h3 mb-3 fw-normal">Sensorhub 入库测试</h1>
-      <label for="folder-select">选择文件夹：</label>
+      <h1 class="h3 mb-3 fw-normal">VE测试平台</h1>
+      <label for="folder-select">选择测试用例：</label>
       <select id="folder-select">
           <option>...</option>
       </select>
@@ -133,7 +133,7 @@
   <main class="form-signin w-100 m-auto">
     <div class="form-floating">
       <input type="" class="form-control" id="string_Input_SN" placeholder="***">
-      <label for="floatingInput">请输入Sensorhub SN号</label>
+      <label for="floatingInput">请输入SN号</label>
     </div>
     <button class="w-100 btn btn-lg btn-primary" id="btn1" onclick="start()" type="button">开始测试</button>
     <button class="w-100 btn btn-lg btn-danger" id="btn2" onclick="endProcess()" type="button">终止测试</button>
