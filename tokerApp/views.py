@@ -2,6 +2,7 @@ from typing import Any
 from django import http
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.conf import settings
 from .models import Toker
 from .models import Record
 from django.views import View
@@ -138,7 +139,8 @@ class My_Server(View):
         base_path = "/sensorhub_web_toker/web_toker/templates/testcase/"
         dir_structure = get_dir_structure(base_path)
         context = {
-            'dir_structure':json.dumps(dir_structure)
+            'dir_structure':json.dumps(dir_structure),
+            'server_ip':settings.SERVER_IP
         }
         return render(request, 'web_UI/index.html', context)
     

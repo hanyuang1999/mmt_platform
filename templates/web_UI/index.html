@@ -169,9 +169,10 @@
 </div>
 
 <script>
-  const currentIP = "10.8.146.24";
-  var resultPort = "http://10.8.146.24:";
-  const socket = new WebSocket('ws://10.8.146.24:19799');
+  const currentIP = "{{ server_ip }}";
+  console.log(currentIP)
+  var resultPort = "http://" + currentIP + ":";
+  const socket = new WebSocket('ws://' + currentIP + ':19799');
 	var btn=document.getElementById("btn");
 	var input_SN=document.getElementById("string_Input_SN");
   var current_step = document.getElementById('cur_step');
