@@ -201,6 +201,7 @@
           const subfolders = fileStructure[selectedFolder];
           let subfoldersHtml = '';
           for (const subfolder in subfolders) {
+            if(subfolder!="conftest.py"){
               subfoldersHtml += `
               <div class="subfolder-item">
                   <input type="checkbox" id="${subfolder}" class="subfolder-checkbox" data-folder="${selectedFolder}">
@@ -208,6 +209,8 @@
                   <div id="${subfolder}-files" class="files-container" style="display:none;">
                       <ul>
               `;
+            }
+              
           for (const file in subfolders[subfolder]) {
           subfoldersHtml += `
               <li>
@@ -307,7 +310,7 @@
   });
 
   //表格控制
-  for(var i=0;i<8;i++) {
+  for(var i=0;i<9;i++) {
     var newRow = document.createElement("tr");
     var cell1 = document.createElement("td");
     var cell2 = document.createElement("td");

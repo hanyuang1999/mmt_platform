@@ -111,16 +111,16 @@ if __name__ == '__main__':
     TestTitle = get_testtitle()
     TestDay = str(datetime.date.today())
     resultpath =os.path.join(TestDay,TestTitle)
-    os.chdir("/sensorhub_web_toker/web_toker/templates")
+    os.chdir("/sensorhub_web_toker/web_toker")
     parts = test_type.split("-")
     test_folder, test_item = parts
     if test_item!="ALL":
-        TestResult= os.popen('pytest ./testcase/%s -vs -k \"%s\" --alluredir=./resultLog/%s/%s'%(test_folder,test_item,TestDay,TestTitle))
+        TestResult= os.popen('pytest ./templates/testcase/%s -vs -k \"%s\" --alluredir=./templates/resultLog/%s/%s'%(test_folder,test_item,TestDay,TestTitle))
     else:
-        TestResult= os.popen('pytest ./testcase/%s -vs --alluredir=./resultLog/%s/%s'%(test_folder,TestDay,TestTitle))
+        TestResult= os.popen('pytest ./templates/testcase/%s -vs --alluredir=./templates/resultLog/%s/%s'%(test_folder,TestDay,TestTitle))
     SH_info,SH_result=shortinfo(TestResult)
     SH_info = SH_info.strip()
-    os.popen("allure generate ./resultLog/%s -o ./result/%s --clean" %(resultpath,resultpath))
+    os.popen("allure generate ./templates/resultLog/%s -o ./templates/result/%s --clean" %(resultpath,resultpath))
     inifile.set_value('SH','testresult','Success')
     time.sleep(5)
     inifile.set_value('SH','running_status','False')
