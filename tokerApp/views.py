@@ -106,7 +106,7 @@ def get_dir_structure(base_path):
     dir_structure = {}
 
     for folder in os.listdir(base_path):
-        if(folder!='.pytest_cache'):
+        if(folder!='.pytest_cache' and folder!='__pycache__' and folder!='common'):
             folder_path = os.path.join(base_path, folder)
             
             if os.path.isdir(folder_path):
