@@ -283,14 +283,17 @@
   
   socket.addEventListener('message', (event) => { // 添加消息监听器
     var data = JSON.parse(event.data)
+    //网页启动时后端读取tmp_port.txt发送至前端
     if(Object.keys(data).length==1){
       resultPort = resultPort + data["result_port"] + "/"
     }
-    if(Object.keys(data).length==3){ 
+    //接收到后端log_socket
+    if(Object.keys(data).length==2){ 
       progressBar.value = next_row+1;
       current_step.textContent = "当前进度:["+progressBar.value+"] "+ data["cur_step"] + ": " + data["remark"];
     }
-    if(Object.keys(data).length==5){
+    //接收到后端result_socket
+    if(Object.keys(data).length==4){
       var edit_cells = document.querySelectorAll("#result_table tbody tr:nth-child("+ (next_row+2) +") td")
       next_row = next_row + 1;
       if(next_row==progressBar.max){
